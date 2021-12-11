@@ -18,13 +18,23 @@ for tile_s in s.split('\n\n'):
     tiles[tile_id] = borders
 
 m = 1
+can_connect_to = {}
+indices = {}
 for tile, borders in tiles.items():
-    c = 0
+    can_connect_to[tile] = set()
     for other_tile, other_borders in tiles.items():
-        for border in borders:
-            if border in other_borders:
-                c += 1
-    if c == 12:
+        if tile == other_tile:
+            continue
+        for i, border in enumerate(borders):
+            try:
+                j = other_borders.index(border)
+                can_connect_to[tile].add(other_tile)
+                indices[tile, other_tile] = i, j
+            except ValueError:
+                pass
+    if len(can_connect_to[tile]) == 2:
         m *= tile
 
 print(m)
+print(can_connect_to)
+print(indices)
