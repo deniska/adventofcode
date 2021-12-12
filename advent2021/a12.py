@@ -24,7 +24,7 @@ def traverse(path, seen):
         s += traverse([*path, cave], seen1)
     return s
 
-def traverse2(path, seen, seen_twice=None):
+def traverse2(path, seen, seen_twice=False):
     if path[-1] == 'end':
         return 1
     s = 0
