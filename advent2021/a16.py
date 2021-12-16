@@ -5,7 +5,7 @@ import operator
 with open(sys.argv[1]) as f:
     hexbits = f.read().strip()
 
-binbits = ''.join(f'{int(i, 16):>04b}' for i in hexbits)
+binbits = ''.join(f'{int(i, 16):04b}' for i in hexbits)
 
 vsum = 0
 
