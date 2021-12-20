@@ -67,7 +67,7 @@ def iter_rotations(scanner):
     for rot in range(24):
         yield rot, {rotate(rot, pt) for pt in scanner}
 
-def it(scanners_relative_to_0, checked):
+def it(scanners_relative_to_0, checked, offsets):
     for idx, scanner0 in scanners_relative_to_0.copy().items():
         for i, scanner in enumerate(scanners):
             if (idx, i) in checked:
@@ -76,22 +76,34 @@ def it(scanners_relative_to_0, checked):
                 continue
             for rotation, rotated_scanner in iter_rotations(scanner):
                 for offset0, offset_scanner0 in iter_offsets(scanner0):
-                    for _, scanner_with_offset in iter_offsets(rotated_scanner):
+                    for offset, scanner_with_offset in iter_offsets(rotated_scanner):
                         if len(offset_scanner0 & scanner_with_offset) >= 12:
                             scanners_relative_to_0[i] = offset_scanner(neg(offset0), scanner_with_offset)
-                            print(i)
+                            print('Found', i)
                             checked.add((idx, i))
+                            offsets[i] = (offset[0] - offset0[0],
+                                    offset[1] - offset0[1],
+                                    offset[2] - offset0[2])
                             return i
             checked.add((idx, i))
 
-def part1():
+def go():
     scanners_relative_to_0 = {0: scanners[0]}
     checked = set()
+    offsets = {0: (0, 0, 0)}
     while(len(scanners_relative_to_0) < len(scanners)):
-        it(scanners_relative_to_0, checked)
+        it(scanners_relative_to_0, checked, offsets)
     pts = set()
     for scanner in scanners_relative_to_0.values():
         pts |= scanner
     print(len(pts))
+    d = 0
+    for p1 in offsets.values():
+        for p2 in offsets.values():
+            d = max(d, dist(p1, p2))
+    print(d)
 
-part1()
+def dist(p1, p2):
+    return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1]) + abs(p1[2] - p2[2])
+
+go()
