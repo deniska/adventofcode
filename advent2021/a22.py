@@ -13,51 +13,39 @@ with open(sys.argv[1]) as f:
 def part1():
     c = 0
     for x, y, z in itertools.product(*[range(-50, 51)]*3):
-        state = False
-        for s, (x1, x2, y1, y2, z1, z2) in instructions:
-            if x1 <= x <= x2 and y1 <= y <= y2 and z1 <= z <= z2:
-                state = s
-        c += state
+        c += calc_point(x, y, z)
     return c
+
+def calc_point(x, y, z):
+    state = False
+    for s, (x1, x2, y1, y2, z1, z2) in instructions:
+        if x1 <= x <= x2 and y1 <= y <= y2 and z1 <= z <= z2:
+            state = s
+    return state
 
 print(part1())
 
 def part2():
-    cubes = []
-    for s, c in instructions:
-        next_cubes = []
-        new_cube = Cube(*c)
-        for cube in cubes:
-            next_cubes.extend(cube.subtract(new_cube))
-        if s:
-            next_cubes.append(new_cube)
-        cubes = next_cubes
-    return sum(c.vol() for c in cubes)
-
-class Cube:
-
-    def __init__(self, x1, x2, y1, y2, z1, z2):
-        self.x1 = x1
-        self.x2 = x2
-        self.y1 = y1
-        self.y2 = y2
-        self.z1 = z1
-        self.z2 = z2
-        self.valid = (x1 < x2) and (y1 < y2) and (z1 < z2)
-
-    def __repr__(self):
-        x1 = self.x1
-        x2 = self.x2
-        y1 = self.y1
-        y2 = self.y2
-        z1 = self.z1
-        z2 = self.z2
-        return f'Cube({x1}, {x2}, {y1}, {y2}, {z1}, {z2})'
-
-    def subtract(self, a):
-        return []
-
-    def vol(self):
-        return (self.x2 - self.x1 + 1) * (self.y2 - self.y1 + 1) * (self.z2 - self.z1 + 1)
+    x_splits = set()
+    y_splits = set()
+    z_splits = set()
+    for s, (x1, x2, y1, y2, z1, z2) in instructions:
+        x_splits.add(x1)
+        x_splits.add(x2+1)
+        y_splits.add(y1)
+        y_splits.add(y2+1)
+        z_splits.add(z1)
+        z_splits.add(z2+1)
+    x_splits = sorted(x_splits)
+    y_splits = sorted(y_splits)
+    z_splits = sorted(z_splits)
+    vol = 0
+    for sx1, sx2 in itertools.pairwise(x_splits):
+        for sy1, sy2 in itertools.pairwise(y_splits):
+            for sz1, sz2 in itertools.pairwise(z_splits):
+                state = calc_point(sx1, sy1, sz1)
+                if state:
+                    vol += (sx2 - sx1) * (sy2 - sy1) * (sz2 - sz1)
+    return vol
 
 print(part2())
