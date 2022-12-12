@@ -53,7 +53,7 @@ def part2():
             l = part1(start=k)
             if l is None:
                 continue
-            lengths.append(part1(start=k))
+            lengths.append(l)
     return min(lengths)
 
 print(part2())
