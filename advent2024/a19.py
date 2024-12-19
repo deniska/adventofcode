@@ -1,5 +1,6 @@
 import re
 import sys
+import functools
 
 designs = []
 with open(sys.argv[1]) as f:
@@ -27,3 +28,20 @@ for d in designs:
         c += 1
 
 print(c)
+
+towels.sort()
+
+@functools.cache
+def count_ways(design, start_idx=0):
+    if start_idx == len(design):
+        return 1
+    c = 0
+    for t in towels:
+        if design.startswith(t, start_idx):
+            c += count_ways(design, start_idx + len(t))
+    return c
+
+s = 0
+for d in designs:
+    s += count_ways(d)
+print(s)
